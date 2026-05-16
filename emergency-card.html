@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Health Card | Smart Health AI</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { background: var(--dark); padding: 1rem; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .card-container { background: var(--white); border-radius: 16px; width: 100%; max-width: 450px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .emergency-header { background: var(--primary); color: var(--white); padding: 1.25rem; font-size: 1.2rem; font-weight: 700; text-align: center; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 0.75rem; transition: background 0.3s; }
+        .pulse { animation: pulse-opacity 1s infinite alternate; }
+        @keyframes pulse-opacity { from { opacity: 0.5; } to { opacity: 1; } }
+        
+        .qr-wrapper { background: var(--light); padding: 2rem; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid var(--gray-light); flex-direction: column;}
+        #qr-code { background: var(--white); padding: 15px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        
+        .vital-info { padding: 1.5rem; }
+        .vital-info h1 { font-size: 1.75rem; color: var(--dark); margin-bottom: 0.25rem; text-align: center; }
+        .patient-id { text-align: center; color: var(--gray); font-size: 0.85rem; margin-bottom: 1.5rem; font-family: monospace; }
+        
+        .vital-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        .vital-box { background: var(--light); padding: 1rem; border-radius: 12px; border: 1px solid var(--gray-light); }
+        .vital-box.blood { border-color: var(--danger); background: var(--danger-light); }
+        .vital-box.blood strong { color: var(--danger); }
+        .vital-box strong { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray); margin-bottom: 0.25rem; }
+        .vital-box span { font-size: 1.2rem; font-weight: 600; color: var(--dark); }
+        
+        .condition-box { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; }
+        .condition-box strong { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--warning); margin-bottom: 0.5rem; }
+        .condition-box p { font-size: 1rem; color: var(--dark); font-weight: 500; }
+        
+        .action-area { padding: 0 1.5rem 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; }
+        .btn-sos { width: 100%; font-size: 1.1rem; padding: 1rem; }
+        
+        @media print {
+            body { background: white; padding: 0; }
+            .card-container { box-shadow: none; border: 2px solid var(--dark); }
+            .action-area, .nav-back { display: none; }
+        }
+        
+        .nav-back { position: absolute; top: 1rem; left: 1rem; color: var(--white); text-decoration: none; font-size: 1.2rem; background: rgba(0,0,0,0.3); padding: 0.5rem 1rem; border-radius: 50px; }
+        
+        /* Mobile Responsive Adjustments */
+        @media (max-width: 480px) {
+            body { padding: 0.5rem; }
+            .card-container { border-radius: 12px; }
+            .emergency-header { padding: 1rem; font-size: 1.1rem; }
+            .qr-wrapper { padding: 1.5rem 1rem; }
+            .vital-info { padding: 1.25rem 1rem; }
+            .vital-grid { grid-template-columns: 1fr; gap: 0.75rem; margin-bottom: 1rem; }
+            .condition-box { padding: 1rem; }
+            .action-area { padding: 0 1rem 1rem; }
+            .vital-box span, .condition-box p { word-break: break-word; }
+            .nav-back { top: 0.5rem; left: 0.5rem; font-size: 1rem; padding: 0.4rem 0.8rem; }
+        }
+    </style>
+<link rel="manifest" href="manifest.json"></head>
+<body>
+    <a href="dashboard.html" class="nav-back"><i class="fas fa-arrow-left"></i> Back</a>
+
+    <div class="card-container">
+        <div class="emergency-header" id="header-banner">
+            <i class="fas fa-briefcase-medical"></i> EMERGENCY MEDICAL CARD
+        </div>
+        
+        <div class="qr-wrapper">
+            <div id="qr-code"></div>
+            <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--gray);">Scan to view full medical history</p>
+        </div>
+        
+        <div class="vital-info">
+            <h1 id="user-name">Loading...</h1>
+            <p class="patient-id">Health ID: <span id="health-id-display">Generating...</span></p>
+            
+            <div class="vital-grid">
+                <div class="vital-box blood">
+                    <strong>Blood Group</strong>
+                    <span id="blood-group">--</span>
+                </div>
+                <div class="vital-box">
+                    <strong>Allergies</strong>
+                    <span id="allergies">None</span>
+                </div>
+            </div>
+            
+            <div class="condition-box">
+                <strong><i class="fas fa-exclamation-triangle"></i> Critical Conditions</strong>
+                <p id="conditions">Fetching vital data...</p>
+            </div>
+        </div>
+        
+        <div class="action-area">
+            <button id="sos-btn" class="btn-danger btn-sos"><i class="fas fa-broadcast-tower"></i> Broadcast SOS Alert</button>
+            <button onclick="window.print()" class="btn-outline"><i class="fas fa-print"></i> Print Card</button>
+        </div>
+    </div>
+
+    <!-- Floating Mic Button -->
+    <button id="voice-trigger" class="btn-mic-floating" title="Tap to speak" style="bottom: 1rem; right: 1rem;">
+        <i class="fas fa-microphone"></i>
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/offline-sync.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/qr-logic.js"></script>
+    <script src="js/offline-sync.js"></script>
+    <script src="js/voice-engine.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await checkAuth();
+            if(user) {
+                document.getElementById('health-id-display').textContent = user.id.split('-')[0].toUpperCase();
+            }
+        });
+    </script>
+</body>
+</html>
+
+

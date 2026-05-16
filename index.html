@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Health AI | Migrant Health System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .hero {
+            padding: 8rem 5% 6rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Abstract Background Elements */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(15, 110, 86, 0.15) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            z-index: 0;
+            animation: floatShape 15s ease-in-out infinite alternate;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -10%;
+            right: -5%;
+            width: 40vw;
+            height: 40vw;
+            background: radial-gradient(circle, rgba(255, 90, 95, 0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            z-index: 0;
+            animation: floatShape 12s ease-in-out infinite alternate-reverse;
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero h1 { 
+            font-size: 3rem; 
+            margin-bottom: 1.5rem; 
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+        
+        .hero p { 
+            font-size: 1.15rem; 
+            max-width: 600px; 
+            margin: 0 auto 2.5rem; 
+        }
+
+        .hero-image {
+            margin-top: 3rem;
+            position: relative;
+            z-index: 5;
+            animation: floatUp 2s ease-out forwards;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        
+        .features-grid { 
+            margin-top: 2rem; 
+            position: relative; 
+            z-index: 10; 
+            padding-bottom: 5rem;
+        }
+
+        .feature-card { 
+            text-align: left; 
+            background: var(--surface-glass); 
+            border: 1px solid var(--border-glass); 
+        }
+
+        .feature-icon-wrapper {
+            background: linear-gradient(135deg, var(--danger-light) 0%, #fff 100%);
+            width: 65px; 
+            height: 65px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border-radius: 16px; 
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .feature-card i { 
+            color: var(--danger); 
+            font-size: 1.75rem;
+        }
+        
+        @media (min-width: 768px) { 
+            .hero h1 { font-size: 4.5rem; } 
+            .hero p { font-size: 1.25rem; }
+            .hero { padding: 10rem 5% 8rem; }
+        }
+
+        @keyframes floatShape {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 50px) scale(1.1); }
+        }
+
+        @keyframes floatUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+<link rel="manifest" href="manifest.json"></head>
+<body>
+    <header>
+        <nav class="navbar animate-fade-in-up" style="animation-duration: 0.8s;">
+            <div class="logo"><i class="fas fa-heartbeat"></i> SmartHealth <span>AI</span></div>
+            <div id="auth-status" class="nav-actions">
+                <a href="auth.html" class="btn-link">Login</a>
+                <a href="auth.html" class="btn-primary">Get Started</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container animate-fade-in-up" style="animation-delay: 0.2s;">
+                <h1>Healthcare <br> <span style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Without Borders.</span></h1>
+                <p>A secure, AI-powered health record system designed for migrant workers. Instantly share medical history and translate diagnoses, even offline.</p>
+                <div class="cta-group">
+                    <a href="auth.html" class="btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;"><i class="fas fa-shield-alt"></i> Get Your Health ID</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="container features-grid animate-fade-in-up" style="animation-delay: 0.4s;">
+            <div class="action-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem;">
+                <div class="card feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <h3>Emergency SOS QR</h3>
+                    <p class="mt-2">Instant offline access to vital info for doctors. One-tap GPS broadcast to family in emergencies.</p>
+                </div>
+                <div class="card feature-card">
+                    <div class="feature-icon-wrapper" style="background: linear-gradient(135deg, #e0f2fe 0%, #fff 100%);">
+                        <i class="fas fa-robot" style="color: var(--info);"></i>
+                    </div>
+                    <h3>AI Health Intelligence</h3>
+                    <p class="mt-2">ML risk predictions and automatic drug interaction checks using your live medical history.</p>
+                </div>
+                <div class="card feature-card">
+                    <div class="feature-icon-wrapper" style="background: linear-gradient(135deg, #dcfce7 0%, #fff 100%);">
+                        <i class="fas fa-language" style="color: var(--success);"></i>
+                    </div>
+                    <h3>Multilingual Voice</h3>
+                    <p class="mt-2">Navigate the app entirely via voice in English, Hindi, or Tamil using Web Speech API.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/offline-sync.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
+
+

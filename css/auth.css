@@ -1,0 +1,123 @@
+/* =========================================
+   SMART HEALTH AI — Auth Page Styles
+   Premium Redesign
+   ========================================= */
+
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-gradient);
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Abstract Blobs for Glassmorphism Background */
+.blob {
+    position: absolute;
+    filter: blur(80px);
+    z-index: 0;
+    border-radius: 50%;
+    opacity: 0.5;
+    animation: floatShape 10s ease-in-out infinite alternate;
+}
+
+.blob-1 {
+    top: -10%;
+    left: -10%;
+    width: 400px;
+    height: 400px;
+    background: var(--primary-light);
+}
+
+.blob-2 {
+    bottom: -10%;
+    right: -10%;
+    width: 350px;
+    height: 350px;
+    background: var(--danger-light);
+    animation-delay: -5s;
+    background: #FF8A8E;
+}
+
+.auth-box {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 3rem 2.5rem;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 15px 35px rgba(15, 110, 86, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    position: relative;
+    z-index: 10;
+}
+
+.auth-box h2 {
+    color: var(--text-main);
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    text-align: center;
+    font-weight: 700;
+}
+
+.auth-logo { 
+    text-align: center; 
+    margin-bottom: 2rem; 
+    font-size: 1.75rem; 
+    color: var(--primary); 
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.auth-logo i { 
+    color: var(--danger); 
+    margin-right: 0.5rem; 
+    filter: drop-shadow(0 2px 4px rgba(255, 90, 95, 0.3));
+}
+
+.auth-logo span { 
+    color: var(--text-main); 
+    font-weight: 400; 
+}
+
+.auth-box .form-control {
+    width: 100%;
+    padding: 0.95rem 1.25rem;
+    margin-bottom: 0;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 12px;
+    font-size: 1rem;
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);
+}
+
+.auth-box .form-control:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(15, 110, 86, 0.1), inset 0 2px 4px rgba(0,0,0,0.01);
+}
+
+.auth-box .btn-primary:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+#additional-fields {
+    display: block;
+}
+
+#toggle-text {
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+#toggle-text:hover {
+    color: var(--primary-dark);
+}

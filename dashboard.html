@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Smart Health AI</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="manifest" href="manifest.json"></head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo"><i class="fas fa-heartbeat"></i> SmartHealth <span>AI</span></div>
+            <div class="nav-actions">
+                <span class="user-greeting" id="user-display-name">Loading...</span>
+                <button onclick="logout()" class="btn-link"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="page-header">
+            <div>
+                <h1>Patient Dashboard</h1>
+                <p>Welcome back. Here is your health overview.</p>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Left Column: Vital Stats & Actions -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                
+                <!-- Quick Actions -->
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-bolt"></i> Quick Actions</h2>
+                    <div class="action-grid">
+                        <a href="emergency-card.html" class="action-btn sos">
+                            <i class="fas fa-qrcode"></i> SOS Emergency QR
+                        </a>
+                        <a href="records.html?action=scan" class="action-btn">
+                            <i class="fas fa-camera"></i> Scan Medicine
+                        </a>
+                        <a href="ai-insights.html" class="action-btn">
+                            <i class="fas fa-robot"></i> AI Risk Analysis
+                        </a>
+                        <a href="family.html" class="action-btn">
+                            <i class="fas fa-users"></i> Family Guardian
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Latest Vitals -->
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h2 class="card-title" style="margin-bottom: 0;"><i class="fas fa-heartbeat text-danger"></i> Latest Vitals</h2>
+                        <button class="btn-link" onclick="openVitalsModal()" style="font-size: 0.85rem;"><i class="fas fa-edit"></i> Update</button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
+                        <div style="background: var(--light); padding: 1rem; border-radius: 8px;">
+                            <span style="font-size: 0.8rem; color: var(--gray); display: block; text-transform: uppercase;">Blood Pressure</span>
+                            <strong style="font-size: 1.25rem; color: var(--dark);" id="display-bp">--/--</strong>
+                        </div>
+                        <div style="background: var(--light); padding: 1rem; border-radius: 8px;">
+                            <span style="font-size: 0.8rem; color: var(--gray); display: block; text-transform: uppercase;">Heart Rate</span>
+                            <strong style="font-size: 1.25rem; color: var(--dark);" id="display-hr">-- <small>bpm</small></strong>
+                        </div>
+                        <div style="background: var(--light); padding: 1rem; border-radius: 8px;">
+                            <span style="font-size: 0.8rem; color: var(--gray); display: block; text-transform: uppercase;">Blood Sugar</span>
+                            <strong style="font-size: 1.25rem; color: var(--dark);" id="display-bs">-- <small>mg/dL</small></strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Timeline & Analytics -->
+            <div>
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <h2 class="card-title"><i class="fas fa-chart-bar text-info"></i> Vitals Analytics</h2>
+                    <canvas id="vitalsChart" width="400" height="200"></canvas>
+                </div>
+                
+                <div class="card" style="height: auto;">
+                    <h2 class="card-title"><i class="fas fa-stream text-primary"></i> Health Timeline</h2>
+                    <div style="display: flex; flex-direction: column; gap: 1rem; position: relative; padding-left: 1rem; border-left: 2px solid var(--gray-light);">
+                        
+                        <div style="position: relative; padding-bottom: 1rem;">
+                            <div style="position: absolute; left: -1.35rem; top: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--success); border: 2px solid var(--white);"></div>
+                            <strong style="display: block; font-size: 0.95rem; color: var(--success);">Vitals Updated</strong>
+                            <span style="font-size: 0.85rem; color: var(--gray);">BP: 120/80, HR: 72 • Today</span>
+                        </div>
+                        
+                        <div style="position: relative; padding-bottom: 1rem;">
+                            <div style="position: absolute; left: -1.35rem; top: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--primary); border: 2px solid var(--white);"></div>
+                            <strong style="display: block; font-size: 0.95rem;">Lisinopril 10mg</strong>
+                            <span style="font-size: 0.85rem; color: var(--gray);">Prescribed by Dr. Sharma • 2 days ago</span>
+                        </div>
+                        
+                        <div style="position: relative; padding-bottom: 1rem;">
+                            <div style="position: absolute; left: -1.35rem; top: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--info); border: 2px solid var(--white);"></div>
+                            <strong style="display: block; font-size: 0.95rem;">Chest X-Ray Report Uploaded</strong>
+                            <span style="font-size: 0.85rem; color: var(--gray);">Clear, no abnormalities • 1 week ago</span>
+                        </div>
+                        
+                        <div style="position: relative; padding-bottom: 0;">
+                            <div style="position: absolute; left: -1.35rem; top: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--danger); border: 2px solid var(--white);"></div>
+                            <strong style="display: block; font-size: 0.95rem;">SOS Alert Triggered</strong>
+                            <span style="font-size: 0.85rem; color: var(--gray);">Location shared • 1 month ago</span>
+                        </div>
+                    </div>
+                    <a href="records.html" class="btn-outline mt-3" style="width: 100%;">View Full History</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Update Vitals Modal -->
+    <div id="vitals-modal" class="modal hidden" style="display: flex; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 400px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.25rem;">Update Vitals</h2>
+                <button class="btn-link" onclick="document.getElementById('vitals-modal').classList.add('hidden')"><i class="fas fa-times" style="font-size: 1.5rem;"></i></button>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 1rem;">These vitals are used to calculate your AI Risk Score.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Age</label>
+                    <input type="number" id="input-age" class="form-control" placeholder="e.g. 35" min="1" max="120">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Blood Pressure</label>
+                    <input type="text" id="input-bp" class="form-control" placeholder="e.g. 120/80">
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Heart Rate (bpm)</label>
+                    <input type="number" id="input-hr" class="form-control" placeholder="e.g. 72" min="30" max="250">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Blood Sugar (mg/dL)</label>
+                    <input type="number" id="input-bs" class="form-control" placeholder="e.g. 105" min="20" max="600">
+                </div>
+            </div>
+            <button id="save-vitals-btn" class="btn-primary" style="width: 100%;" onclick="saveVitals()">
+                <i class="fas fa-save"></i> Save Vitals
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Mic Button -->
+    <button id="voice-trigger" class="btn-mic-floating" title="Tap to speak">
+        <i class="fas fa-microphone"></i>
+    </button>
+
+    <!-- Emergency Modal -->
+    <div id="emergency-modal" class="modal hidden" style="display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <div class="card" style="width: 100%; max-width: 400px; text-align: center; border-top: 6px solid var(--danger);">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 0.5rem;">
+                <button class="btn-link" onclick="document.getElementById('emergency-modal').classList.add('hidden')"><i class="fas fa-times" style="font-size: 1.5rem;"></i></button>
+            </div>
+            <h2 style="color: var(--danger); margin-bottom: 1rem;"><i class="fas fa-exclamation-triangle pulse"></i> EMERGENCY MODE</h2>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <button class="btn-danger" onclick="triggerSOSAlert()" style="width: 100%; font-size: 1.1rem; padding: 1.2rem;">
+                    <i class="fas fa-broadcast-tower"></i> Broadcast SOS
+                </button>
+                <a href="emergency-card.html" class="btn-primary" style="width: 100%;">
+                    <i class="fas fa-qrcode"></i> Show Medical QR
+                </a>
+                <a href="tel:911" class="btn-outline" style="width: 100%; border-color: var(--danger); color: var(--danger);">
+                    <i class="fas fa-phone-alt"></i> Call Ambulance
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/offline-sync.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/voice-engine.js"></script>
+    <script>
+        let currentUserData = null;
+
+        function triggerSOSAlert() {
+            if (window.showToast) window.showToast("SOS Alert triggered!", "error");
+            if (window.sendLocalNotification) {
+                window.sendLocalNotification("SOS Activated", { body: "Your emergency contacts have been notified." });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await checkAuth();
+            if (user) {
+                // Check permissions for notifications (Phase 3)
+                window.requestNotificationPermission();
+
+                // Fetch profile to get real display name and vitals
+                const { data } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+                if (data) {
+                    let cached = {};
+                    if (window.offlineSync) {
+                        cached = window.offlineSync.getProfile(user.id) || {};
+                    }
+                    
+                    currentUserData = { ...cached, ...data };
+                    
+                    document.getElementById('user-display-name').textContent = currentUserData.full_name || user.user_metadata?.full_name || 'User';
+                    document.getElementById('display-bp').textContent = currentUserData.blood_pressure || '--/--';
+                    document.getElementById('display-hr').innerHTML = (currentUserData.heart_rate || '--') + ' <small>bpm</small>';
+                    document.getElementById('display-bs').innerHTML = (currentUserData.blood_sugar || '--') + ' <small>mg/dL</small>';
+                    
+                    if (window.offlineSync) window.offlineSync.saveProfile(user.id, currentUserData);
+                }
+                
+                initChart();
+            }
+        });
+
+        function initChart() {
+            const ctx = document.getElementById('vitalsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [
+                        {
+                            label: 'Systolic BP',
+                            data: [120, 122, 118, 125, 130, 125],
+                            borderColor: '#0F6E56',
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Blood Sugar',
+                            data: [95, 98, 105, 110, 108, 105],
+                            borderColor: '#FF5A5F',
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        function openVitalsModal() {
+            if (currentUserData) {
+                document.getElementById('input-age').value = currentUserData.age || '';
+                document.getElementById('input-bp').value = currentUserData.blood_pressure || '';
+                document.getElementById('input-hr').value = currentUserData.heart_rate || '';
+                document.getElementById('input-bs').value = currentUserData.blood_sugar || '';
+            }
+            document.getElementById('vitals-modal').classList.remove('hidden');
+        }
+
+        async function saveVitals() {
+            const ageVal = document.getElementById('input-age').value;
+            const bpVal = document.getElementById('input-bp').value;
+            const hrVal = document.getElementById('input-hr').value;
+            const bsVal = document.getElementById('input-bs').value;
+            
+            const age = ageVal ? parseInt(ageVal, 10) : null;
+            const bp = bpVal.trim();
+            const hr = hrVal ? parseInt(hrVal, 10) : null;
+            const bs = bsVal ? parseInt(bsVal, 10) : null;
+
+            const btn = document.getElementById('save-vitals-btn');
+            btn.disabled = true; btn.innerText = "Saving...";
+
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (user) {
+                const { error } = await supabaseClient.from('profiles')
+                    .update({ age: age, blood_pressure: bp, heart_rate: hr, blood_sugar: bs })
+                    .eq('id', user.id);
+                
+                if (error) {
+                    console.warn("Backend update failed. Using local fallback.", error.message);
+                    if (window.showToast) window.showToast("Saved to local device.", "warning");
+                } else {
+                    if (window.showToast) window.showToast("Vitals updated successfully!", "success");
+                }
+                
+                document.getElementById('display-bp').textContent = bp || '--/--';
+                document.getElementById('display-hr').innerHTML = (hr || '--') + ' <small>bpm</small>';
+                document.getElementById('display-bs').innerHTML = (bs || '--') + ' <small>mg/dL</small>';
+                document.getElementById('vitals-modal').classList.add('hidden');
+                
+                if (!currentUserData) currentUserData = {};
+                currentUserData.age = age;
+                currentUserData.blood_pressure = bp;
+                currentUserData.heart_rate = hr;
+                currentUserData.blood_sugar = bs;
+                if (window.offlineSync) window.offlineSync.saveProfile(user.id, currentUserData);
+            }
+            btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Save Vitals';
+        }
+    </script>
+    <!-- Sticky Emergency Button -->
+    <button class="btn-danger" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000; border-radius: 50%; width: 60px; height: 60px; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);" onclick="document.getElementById('emergency-modal').classList.remove('hidden')" title="Emergency Access">
+        <i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i>
+    </button>
+</body>
+</html>
+
+

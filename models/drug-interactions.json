@@ -1,0 +1,22 @@
+[
+  { "drug1": "Aspirin", "drug2": "Warfarin", "severity": "High", "description": "Increased risk of severe bleeding." },
+  { "drug1": "Ibuprofen", "drug2": "Lisinopril", "severity": "Moderate", "description": "May reduce the blood pressure-lowering effect of Lisinopril." },
+  { "drug1": "Omeprazole", "drug2": "Clopidogrel", "severity": "High", "description": "Omeprazole may reduce the effectiveness of Clopidogrel in preventing heart attacks." },
+  { "drug1": "Simvastatin", "drug2": "Amiodarone", "severity": "High", "description": "Increased risk of muscle damage (myopathy/rhabdomyolysis)." },
+  { "drug1": "Metformin", "drug2": "Iodinated Contrast", "severity": "High", "description": "Risk of lactic acidosis; stop Metformin before imaging procedures." },
+  { "drug1": "Paracetamol", "drug2": "Alcohol", "severity": "High", "description": "Increased risk of liver damage." },
+  { "drug1": "Ciprofloxacin", "drug2": "Theophylline", "severity": "High", "description": "Ciprofloxacin can increase Theophylline levels, leading to toxicity." },
+  { "drug1": "Fluoxetine", "drug2": "Tramadol", "severity": "High", "description": "Increased risk of serotonin syndrome and seizures." },
+  { "drug1": "Levothyroxine", "drug2": "Calcium Carbonate", "severity": "Moderate", "description": "Calcium can decrease the absorption of Levothyroxine. Take them at least 4 hours apart." },
+  { "drug1": "Digoxin", "drug2": "Verapamil", "severity": "High", "description": "Verapamil can increase Digoxin levels, leading to toxicity." },
+  { "drug1": "Sildenafil", "drug2": "Nitroglycerin", "severity": "High", "description": "Severe, potentially fatal drop in blood pressure." },
+  { "drug1": "Spironolactone", "drug2": "Potassium Supplements", "severity": "High", "description": "Risk of life-threatening hyperkalemia (high potassium)." },
+  { "drug1": "Albuterol", "drug2": "Propranolol", "severity": "High", "description": "Propranolol blocks the bronchodilator effect of Albuterol, potentially triggering asthma." },
+  { "drug1": "Lithium", "drug2": "Hydrochlorothiazide", "severity": "High", "description": "Increased risk of Lithium toxicity due to decreased renal clearance." },
+  { "drug1": "Atorvastatin", "drug2": "Grapefruit Juice", "severity": "Moderate", "description": "Grapefruit juice increases statin levels, raising the risk of muscle side effects." },
+  { "drug1": "Methotrexate", "drug2": "Naproxen", "severity": "High", "description": "Increased risk of Methotrexate toxicity (bone marrow suppression)." },
+  { "drug1": "Azithromycin", "drug2": "Ondansetron", "severity": "Moderate", "description": "Increased risk of irregular heart rhythms (QT prolongation)." },
+  { "drug1": "Clindamycin", "drug2": "Erythromycin", "severity": "Moderate", "description": "They may compete for the same binding site, reducing effectiveness." },
+  { "drug1": "Phenytoin", "drug2": "Oral Contraceptives", "severity": "High", "description": "Phenytoin decreases the effectiveness of oral contraceptives." },
+  { "drug1": "Doxycycline", "drug2": "Iron Supplements", "severity": "Moderate", "description": "Iron decreases the absorption of Doxycycline. Separate doses by 2 hours." }
+]

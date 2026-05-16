@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Records & Meds | Smart Health AI</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .record-item { background: var(--white); border: 1px solid var(--gray-light); border-radius: 12px; padding: 1.25rem; display: flex; align-items: flex-start; gap: 1rem; transition: box-shadow 0.2s; }
+        .record-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .record-icon { background: var(--light); color: var(--primary); width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+        .record-details { flex: 1; }
+        .record-title { font-weight: 600; color: var(--dark); font-size: 1.05rem; margin-bottom: 0.25rem; }
+        .record-meta { font-size: 0.85rem; color: var(--gray); margin-bottom: 0.5rem; }
+        .record-rx { background: #F0FDF4; border: 1px solid #BBF7D0; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem; color: var(--dark); margin-top: 0.5rem; display: flex; gap: 0.5rem; align-items: center; }
+        .record-rx i { color: var(--success); }
+        
+        .scanner-container { background: #000; border-radius: 12px; overflow: hidden; position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 1rem; }
+        video { width: 100%; max-height: 300px; object-fit: cover; }
+        canvas { display: none; }
+        .scan-overlay { position: absolute; inset: 0; pointer-events: none; border: 2px dashed rgba(255,255,255,0.5); margin: 2rem; border-radius: 8px; }
+    </style>
+<link rel="manifest" href="manifest.json"></head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo"><a href="dashboard.html" style="text-decoration:none;color:inherit"><i class="fas fa-heartbeat"></i> SmartHealth <span>AI</span></a></div>
+            <div class="nav-actions">
+                <a href="dashboard.html" class="btn-outline" style="padding: 0.5rem 1rem;">Back to Dashboard</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="page-header">
+            <div>
+                <h1><i class="fas fa-folder-open text-primary"></i> Medical Records</h1>
+                <p>Manage your clinical history and scan new medications.</p>
+            </div>
+            <button class="btn-primary" onclick="document.getElementById('add-modal').classList.remove('hidden')">
+                <i class="fas fa-plus"></i> Add Record
+            </button>
+        </div>
+
+        <div id="record-list" style="display: flex; flex-direction: column; gap: 1rem;">
+            <!-- Rendered via JS -->
+            <div class="skeleton skeleton-box"></div>
+            <div class="skeleton skeleton-box"></div>
+        </div>
+    </main>
+
+    <!-- Add Record / Scanner Modal -->
+    <div id="add-modal" class="modal hidden" style="display: flex; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.25rem;">New Record & Medication</h2>
+                <button class="btn-link" onclick="document.getElementById('add-modal').classList.add('hidden')"><i class="fas fa-times" style="font-size: 1.5rem;"></i></button>
+            </div>
+
+            <!-- Feature 4: Smart Scanner -->
+            <div style="background: var(--light); border: 1px solid var(--gray-light); padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; text-align: center;">
+                <h3 style="font-size: 1rem; margin-bottom: 0.5rem;"><i class="fas fa-camera text-primary"></i> Smart Pill Scanner</h3>
+                <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 1rem;">Point camera at the medicine label to auto-fill the form and check for interactions.</p>
+                
+                <div class="scanner-container">
+                    <video id="scanner-video" class="hidden" autoplay playsinline></video>
+                    <canvas id="scanner-canvas"></canvas>
+                    <div class="scan-overlay hidden" id="scan-overlay"></div>
+                </div>
+                
+                <button id="start-scan-btn" class="btn-outline" style="width: 100%;">
+                    <i class="fas fa-camera"></i> Open Camera Scanner
+                </button>
+            </div>
+
+            <!-- Manual Form & File Upload -->
+            <div class="form-group">
+                <label class="form-label">Diagnosis / Notes</label>
+                <textarea id="diagnosis-input" class="form-control" rows="2" placeholder="e.g., Seasonal Flu"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Prescription / Medications</label>
+                <textarea id="prescription-input" class="form-control" rows="2" placeholder="e.g., Paracetamol 500mg"></textarea>
+            </div>
+            
+            <div class="form-group" style="margin-top: 1rem; padding: 1rem; border: 1px dashed var(--primary); border-radius: 8px; text-align: center; background: #f8fafc;">
+                <label class="form-label" style="display: block; margin-bottom: 0.5rem; color: var(--primary);"><i class="fas fa-cloud-upload-alt"></i> Upload Medical Document (PDF/Image)</label>
+                <input type="file" id="file-upload" class="form-control" accept=".pdf,image/*" style="border: none; padding: 0.5rem; cursor: pointer;">
+                <select id="file-category" class="form-control" style="margin-top: 0.5rem;">
+                    <option value="Lab Report">Lab Report</option>
+                    <option value="Prescription">Prescription</option>
+                    <option value="X-Ray">X-Ray / Scan</option>
+                    <option value="Other">Other</option>
+                </select>
+                <p style="font-size: 0.75rem; color: var(--gray); margin-top: 0.5rem;">Max size: 5MB. Make sure you have created the 'medical_files' storage bucket in Supabase.</p>
+            </div>
+
+            <button id="save-record-btn" class="btn-primary" style="width: 100%; margin-top: 1rem;" onclick="saveRecord()">
+                <i class="fas fa-save"></i> Save Record
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Mic Button -->
+    <button id="voice-trigger" class="btn-mic-floating" title="Tap to speak">
+        <i class="fas fa-microphone"></i>
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="js/offline-sync.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/ocr-scanner.js"></script>
+    <script src="js/voice-engine.js"></script>
+    <script src="js/ml-predict.js"></script>
+    
+    <script>
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            currentUser = await checkAuth();
+            if (currentUser) {
+                fetchAndRenderRecords();
+            }
+        });
+
+        async function fetchAndRenderRecords() {
+            const list = document.getElementById('record-list');
+            list.innerHTML = '<div class="skeleton skeleton-box"></div><div class="skeleton skeleton-box"></div>';
+            
+            // Fetch Text Records
+            const { data: recordsData } = await supabaseClient
+                .from('medical_records')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('created_at', { ascending: false });
+
+            // Fetch Documents
+            const { data: docsData } = await supabaseClient
+                .from('medical_documents')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('uploaded_at', { ascending: false });
+
+            let allItems = [];
+
+            // Add local records
+            if (window.offlineSync) {
+                const localRecords = window.offlineSync.getRecords(currentUser.id);
+                localRecords.forEach(r => allItems.push({ ...r, type: 'text' }));
+            }
+
+            // Add fetched records
+            if (recordsData) {
+                recordsData.forEach(r => allItems.push({ ...r, type: 'text' }));
+            }
+
+            // Add fetched documents
+            if (docsData) {
+                docsData.forEach(d => allItems.push({ ...d, type: 'document', created_at: d.uploaded_at }));
+            }
+
+            // Sort all by date descending
+            allItems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            list.innerHTML = '';
+            
+            if (allItems.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 3rem 1rem;">
+                        <i class="fas fa-folder-open" style="font-size: 3rem; color: var(--gray-light); margin-bottom: 1rem;"></i>
+                        <p>No records found. Click "Add Record" to start.</p>
+                    </div>`;
+                return;
+            }
+
+            allItems.forEach(item => {
+                const date = new Date(item.created_at).toLocaleDateString('en-IN', { year:'numeric', month:'short', day:'numeric' });
+                
+                if (item.type === 'text') {
+                    let rxHtml = '';
+                    if(item.prescription) {
+                        rxHtml = `<div class="record-rx"><i class="fas fa-pills"></i> <span>${escapeHtml(item.prescription)}</span></div>`;
+                    }
+
+                    list.innerHTML += `
+                        <div class="record-item">
+                            <div class="record-icon"><i class="fas fa-file-medical-alt"></i></div>
+                            <div class="record-details">
+                                <div class="record-title">${escapeHtml(item.diagnosis || 'Clinical Note')}</div>
+                                <div class="record-meta"><i class="far fa-calendar-alt"></i> Added on ${date}</div>
+                                ${rxHtml}
+                            </div>
+                        </div>
+                    `;
+                } else if (item.type === 'document') {
+                    list.innerHTML += `
+                        <div class="record-item" style="border-left: 4px solid var(--info);">
+                            <div class="record-icon" style="background: #E0F2FE; color: #0284C7;"><i class="fas fa-file-pdf"></i></div>
+                            <div class="record-details">
+                                <div class="record-title">${escapeHtml(item.file_name)} <span style="font-size: 0.75rem; background: var(--gray-light); padding: 2px 6px; border-radius: 10px;">${escapeHtml(item.category)}</span></div>
+                                <div class="record-meta"><i class="far fa-calendar-alt"></i> Uploaded on ${date}</div>
+                                <div class="record-rx" style="background: transparent; border: none; padding: 0;">
+                                    <a href="${escapeHtml(item.file_url)}" target="_blank" class="btn-link" style="font-size: 0.85rem;"><i class="fas fa-external-link-alt"></i> View / Download Document</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        async function saveRecord() {
+            const diag = document.getElementById('diagnosis-input').value.trim();
+            const rx = document.getElementById('prescription-input').value.trim();
+            const fileInput = document.getElementById('file-upload');
+            const category = document.getElementById('file-category').value;
+            
+            const file = fileInput.files[0];
+
+            if(!diag && !rx && !file) {
+                if(window.showToast) window.showToast("Please enter text or upload a file.", "error");
+                return;
+            }
+
+            const btn = document.getElementById('save-record-btn');
+            btn.disabled = true; btn.innerText = "Processing...";
+
+            // 1. Upload File if present
+            if (file) {
+                btn.innerText = "Uploading File...";
+                const fileExt = file.name.split('.').pop();
+                const filePath = `${currentUser.id}/${Date.now()}.${fileExt}`;
+                
+                const { error: uploadError } = await supabaseClient.storage
+                    .from('medical_files')
+                    .upload(filePath, file);
+
+                if (uploadError) {
+                    console.error(uploadError);
+                    if(window.showToast) window.showToast("File upload failed. Ensure 'medical_files' bucket exists and RLS is correct. Text record will still be saved.", "error");
+                    // Do not return, continue to save text record if any
+                } else {
+                    const { data: publicUrlData } = supabaseClient.storage
+                        .from('medical_files')
+                        .getPublicUrl(filePath);
+
+                    const fileUrl = publicUrlData.publicUrl;
+
+                    // Save to documents table
+                    await supabaseClient.from('medical_documents').insert([{
+                        user_id: currentUser.id,
+                        file_name: file.name,
+                        file_url: fileUrl,
+                        file_type: file.type,
+                        category: category
+                    }]);
+                }
+            }
+
+            // 2. Save Text Record if present
+            if (diag || rx) {
+                btn.innerText = "Saving Note...";
+                const { error } = await supabaseClient.from('medical_records').insert([{
+                    user_id: currentUser.id,
+                    diagnosis: diag,
+                    prescription: rx
+                }]);
+
+                if (error) {
+                    if (window.offlineSync) {
+                        window.offlineSync.addRecord(currentUser.id, {
+                            id: 'local-' + Date.now(),
+                            diagnosis: diag,
+                            prescription: rx,
+                            created_at: new Date().toISOString()
+                        });
+                    }
+                }
+            }
+
+            if(window.showToast) window.showToast("Successfully saved!", "success");
+            document.getElementById('add-modal').classList.add('hidden');
+            document.getElementById('diagnosis-input').value = '';
+            document.getElementById('prescription-input').value = '';
+            fileInput.value = '';
+            await fetchAndRenderRecords();
+            
+            btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Save Record';
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
+
+

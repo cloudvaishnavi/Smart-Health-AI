@@ -1,0 +1,109 @@
+/* =========================================
+   SMART HEALTH AI — AI Insights Page Styles
+   FIX: This file was referenced in ai-insights.html but did not exist (404)
+   ========================================= */
+
+.dashboard-wrapper {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.section-header h1 {
+    font-size: 1.9rem;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.section-header p {
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+/* ---- AI Cards ---- */
+.ai-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 1.75rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+}
+
+.ai-card h3 {
+    font-size: 1.1rem;
+    color: var(--dark);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ai-card h3 i {
+    color: var(--primary);
+}
+
+.placeholder-text {
+    color: #999;
+    font-style: italic;
+}
+
+/* ---- Risk Meter ---- */
+.risk-card { border-left: 4px solid var(--secondary); }
+
+.risk-meter-container {
+    background: var(--light);
+    border-radius: 30px;
+    height: 18px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 30px;
+    background: var(--secondary);
+    transition: width 0.8s ease, background 0.4s ease;
+}
+
+#risk-prediction-text {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* ---- Voice Floating Button ---- */
+.voice-floating-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--primary);
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 6px 20px rgba(0, 82, 204, 0.35);
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+/* ---- Loader ---- */
+#ai-loader {
+    color: var(--primary);
+    font-style: italic;
+    animation: fadeInOut 1.5s infinite;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0.4; }
+    50%       { opacity: 1; }
+}

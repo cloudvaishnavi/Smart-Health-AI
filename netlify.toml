@@ -1,0 +1,23 @@
+# Netlify Configuration for Smart Health AI
+
+[build]
+  publish = "/"
+
+# FIX: The previous catch-all redirect (/* → /index.html, status 200) was wrong for
+# a Multi-Page Application. It caused every direct URL (e.g. /dashboard.html) to serve
+# index.html instead. Removed it. Netlify serves .html files directly by default.
+# Only keep a 404 fallback so broken links show a clean error, not Netlify's default page.
+[[redirects]]
+  from = "/*"
+  to   = "/index.html"
+  status = 404
+
+# Security Headers
+[[headers]]
+  for = "/*"
+    [headers.values]
+      X-Frame-Options = "DENY"
+      X-Content-Type-Options = "nosniff"
+      X-XSS-Protection = "1; mode=block"
+      Referrer-Policy = "strict-origin-when-cross-origin"
+      Content-Security-Policy = "upgrade-insecure-requests"

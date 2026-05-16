@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Profile | Smart Health AI</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: var(--light); padding: 1rem; }
+        .emergency-container { max-width: 600px; margin: 0 auto; background: var(--white); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; border-top: 6px solid var(--danger); }
+        .header { background: var(--danger-light); padding: 2rem 1.5rem; text-align: center; border-bottom: 1px solid var(--danger); }
+        .header h1 { color: var(--danger); font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .header p { color: var(--dark); font-weight: 500; font-size: 1.1rem; }
+        
+        .section { padding: 1.5rem; border-bottom: 1px solid var(--gray-light); }
+        .section-title { font-size: 1.1rem; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        
+        .vital-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .vital-box { background: var(--light); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-glass); }
+        .vital-box.alert { background: #FEF2F2; border-color: #FECACA; }
+        .vital-box strong { display: block; font-size: 0.8rem; color: var(--gray); text-transform: uppercase; margin-bottom: 0.25rem; }
+        .vital-box span { font-size: 1.1rem; color: var(--dark); font-weight: 600; }
+        
+        .data-row { margin-bottom: 1rem; }
+        .data-row:last-child { margin-bottom: 0; }
+        .data-row strong { display: block; color: var(--gray); font-size: 0.85rem; margin-bottom: 0.25rem; }
+        .data-row div { color: var(--dark); font-size: 1.05rem; font-weight: 500; }
+        
+        .footer { padding: 1.5rem; text-align: center; color: var(--gray); font-size: 0.85rem; background: var(--light); }
+        
+        .loader { text-align: center; padding: 4rem 0; color: var(--primary); }
+        .error-msg { text-align: center; padding: 3rem 1rem; color: var(--danger); font-weight: 500; }
+        
+        /* Mobile Responsive Adjustments */
+        @media (max-width: 480px) {
+            body { padding: 0.5rem; }
+            .header { padding: 1.5rem 1rem; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 1.25rem 1rem; }
+            .vital-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+            .vital-box span, .data-row div { word-break: break-word; }
+        }
+    </style>
+<link rel="manifest" href="manifest.json"></head>
+<body>
+    <div class="emergency-container" id="profile-container">
+        <div class="loader">
+            <i class="fas fa-spinner fa-spin fa-3x"></i>
+            <p class="mt-2">Loading Emergency Profile...</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            let userId = params.get('id');
+            const container = document.getElementById('profile-container');
+
+            // Check if profile data is embedded in the URL (for offline support / RLS bypass)
+            const hash = window.location.hash;
+            let embeddedProfile = null;
+            if (hash && hash.startsWith('#data=')) {
+                try {
+                    const payload = hash.substring(6);
+                    const decoded = JSON.parse(decodeURIComponent(atob(payload)));
+                    
+                    if (decoded.id) userId = decoded.id; // Fallback for buggy QR scanners that strip query params
+                    
+                    embeddedProfile = {
+                        full_name: decoded.n,
+                        blood_group: decoded.b,
+                        allergies: decoded.a,
+                        critical_conditions: decoded.c,
+                        current_medications: decoded.m,
+                        emergency_contacts: decoded.e,
+                        emergency_notes: decoded.o,
+                        organ_donor_status: decoded.d
+                    };
+                } catch (e) {
+                    console.warn("Failed to decode embedded profile", e);
+                }
+            }
+
+            if (!userId) {
+                container.innerHTML = `<div class="error-msg"><i class="fas fa-exclamation-circle fa-2x mb-1"></i><br>Invalid or missing patient ID.</div>`;
+                return;
+            }
+
+            if (embeddedProfile) {
+                renderProfile(embeddedProfile, userId);
+                return;
+            }
+
+            try {
+                // Fetch public data using the anon key (RLS policy allows true for select on profiles)
+                const { data, error } = await supabaseClient.from('profiles').select('*').eq('id', userId).single();
+
+                if (error || !data) {
+                    throw new Error("Patient not found or network error.");
+                }
+
+                renderProfile(data, userId);
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<div class="error-msg"><i class="fas fa-wifi fa-2x mb-1"></i><br>Could not load profile. Ensure you are online.</div>`;
+            }
+        });
+
+        function renderProfile(profile, userId) {
+            const container = document.getElementById('profile-container');
+            
+            const html = `
+                <div class="header">
+                    <h1><i class="fas fa-briefcase-medical pulse"></i> EMERGENCY DATA</h1>
+                    <p>${escapeHtml(profile.full_name || 'Unknown Patient')}</p>
+                </div>
+                
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-heartbeat"></i> Critical Vitals</h2>
+                    <div class="vital-grid">
+                        <div class="vital-box alert">
+                            <strong>Blood Group</strong>
+                            <span>${escapeHtml(profile.blood_group || 'UNKNOWN')}</span>
+                        </div>
+                        <div class="vital-box alert">
+                            <strong>Allergies</strong>
+                            <span>${escapeHtml(profile.allergies || 'None reported')}</span>
+                        </div>
+                        <div class="vital-box">
+                            <strong>Donor Status</strong>
+                            <span>${escapeHtml(profile.organ_donor_status || 'Not Registered')}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-notes-medical"></i> Medical Info</h2>
+                    <div class="data-row">
+                        <strong>Critical / Chronic Conditions</strong>
+                        <div style="color: var(--danger);">${escapeHtml(profile.critical_conditions || 'None reported')}</div>
+                    </div>
+                    <div class="data-row">
+                        <strong>Current Medications</strong>
+                        <div>${escapeHtml(profile.current_medications || 'None reported')}</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-phone-alt"></i> Contacts & Notes</h2>
+                    <div class="data-row">
+                        <strong>Emergency Contacts</strong>
+                        <div>${escapeHtml(profile.emergency_contacts || 'Not provided')}</div>
+                    </div>
+                    <div class="data-row">
+                        <strong>Emergency Notes for Paramedics</strong>
+                        <div>${escapeHtml(profile.emergency_notes || 'None')}</div>
+                    </div>
+                </div>
+                
+                <div class="section" id="medical-history-section">
+                    <h2 class="section-title"><i class="fas fa-file-medical-alt"></i> Full Clinical History</h2>
+                    <div id="history-loader" style="text-align: center; color: var(--gray); font-size: 0.9rem; padding: 1rem;">
+                        <i class="fas fa-spinner fa-spin"></i> Fetching records from secure server...
+                    </div>
+                    <div id="history-content"></div>
+                </div>
+                
+                <div class="footer">
+                    <i class="fas fa-lock"></i> Protected by Smart Health AI. Only emergency-critical data is shown to protect patient privacy.
+                </div>
+            `;
+            
+            container.innerHTML = html;
+            
+            if (userId) {
+                fetchMedicalHistory(userId);
+            }
+        }
+
+        async function fetchMedicalHistory(userId) {
+            const loader = document.getElementById('history-loader');
+            const content = document.getElementById('history-content');
+            
+            if (!navigator.onLine) {
+                loader.innerHTML = '<span style="color: var(--warning);"><i class="fas fa-wifi"></i> Offline: Cannot load full history.</span>';
+                return;
+            }
+
+            try {
+                // Fetch Text Records
+                const { data: recordsData, error: recordsError } = await supabaseClient
+                    .from('medical_records')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false });
+
+                // Fetch Documents
+                const { data: docsData, error: docsError } = await supabaseClient
+                    .from('medical_documents')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('uploaded_at', { ascending: false });
+
+                if (recordsError || docsError) {
+                    throw new Error("RLS or Network error fetching records.");
+                }
+
+                let allItems = [];
+                if (recordsData) recordsData.forEach(r => allItems.push({ ...r, type: 'text' }));
+                if (docsData) docsData.forEach(d => allItems.push({ ...d, type: 'document', created_at: d.uploaded_at }));
+                
+                allItems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                loader.style.display = 'none';
+
+                if (allItems.length === 0) {
+                    content.innerHTML = '<p style="color: var(--gray); font-size: 0.9rem;">No clinical records found on server.</p>';
+                    return;
+                }
+
+                let historyHtml = '';
+                allItems.forEach(item => {
+                    const date = new Date(item.created_at).toLocaleDateString('en-IN', { year:'numeric', month:'short', day:'numeric' });
+                    
+                    if (item.type === 'text') {
+                        historyHtml += `
+                            <div style="background: var(--light); padding: 1rem; border-radius: 8px; margin-bottom: 0.75rem; border: 1px solid var(--gray-light);">
+                                <div style="font-size: 0.8rem; color: var(--gray); margin-bottom: 0.25rem;"><i class="far fa-calendar-alt"></i> ${date}</div>
+                                <div style="font-weight: 600; color: var(--dark); margin-bottom: 0.5rem;">${escapeHtml(item.diagnosis || 'Clinical Note')}</div>
+                                ${item.prescription ? `<div style="font-size: 0.9rem; color: var(--text-main);"><i class="fas fa-pills" style="color: var(--primary);"></i> ${escapeHtml(item.prescription)}</div>` : ''}
+                            </div>
+                        `;
+                    } else if (item.type === 'document') {
+                        historyHtml += `
+                            <div style="background: #E0F2FE; padding: 1rem; border-radius: 8px; margin-bottom: 0.75rem; border: 1px solid #BAE6FD;">
+                                <div style="font-size: 0.8rem; color: var(--info); margin-bottom: 0.25rem;"><i class="far fa-calendar-alt"></i> ${date} • ${escapeHtml(item.category)}</div>
+                                <div style="font-weight: 600; color: #0284C7; margin-bottom: 0.5rem;"><i class="fas fa-file-pdf"></i> ${escapeHtml(item.file_name)}</div>
+                                <a href="${escapeHtml(item.file_url)}" target="_blank" style="font-size: 0.85rem; color: #0284C7; text-decoration: none; font-weight: 500;"><i class="fas fa-external-link-alt"></i> View Document</a>
+                            </div>
+                        `;
+                    }
+                });
+                
+                content.innerHTML = historyHtml;
+
+            } catch (e) {
+                console.error(e);
+                loader.innerHTML = '<span style="color: var(--warning);"><i class="fas fa-lock"></i> Full history is protected or unavailable.</span>';
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
+
+

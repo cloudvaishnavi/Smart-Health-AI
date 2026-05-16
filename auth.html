@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Smart Health AI</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="manifest" href="manifest.json"></head>
+<body>
+    <div class="auth-container">
+        <!-- Decorative abstract background blobs -->
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        
+        <div class="auth-box animate-fade-in-up">
+            <div class="auth-logo"><i class="fas fa-heartbeat"></i> SmartHealth <span>AI</span></div>
+            <h2 id="auth-title">Worker Registration</h2>
+            
+            <form id="auth-form">
+                <div class="form-group">
+                    <input type="email" id="email" class="form-control" placeholder="Email Address" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" class="form-control" placeholder="Password (Min 8 chars)" required>
+                </div>
+                
+                <div id="additional-fields">
+                    <div class="form-group">
+                        <label class="form-label" for="role">Select Role</label>
+                        <select id="role" class="form-control">
+                            <option value="patient">Patient</option>
+                            <option value="doctor">Doctor</option>
+                            <option value="family">Family Member</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="full_name" class="form-control" placeholder="Full Legal Name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="language">Primary Language</label>
+                        <select id="language" class="form-control">
+                            <option value="English">English</option>
+                            <option value="Hindi">Hindi (हिंदी)</option>
+                            <option value="Kannada">Kannada (ಕನ್ನಡ)</option>
+                        </select>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <input type="number" id="age" class="form-control" placeholder="Age" min="1" max="120">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="blood_pressure" class="form-control" placeholder="BP (e.g. 120/80)">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <input type="number" id="heart_rate" class="form-control" placeholder="HR (bpm)" min="30" max="250">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="blood_sugar" class="form-control" placeholder="Sugar (mg/dL)" min="20" max="600">
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" id="auth-btn" class="btn-primary" style="width: 100%; padding: 0.95rem; margin-top: 0.5rem; border-radius: 12px; font-size: 1.05rem;">Register Account</button>
+            </form>
+
+            <button type="button" id="demo-btn" class="btn-outline" style="width: 100%; padding: 0.95rem; margin-top: 1rem; border-radius: 12px; font-size: 1.05rem;" onclick="demoLogin()">
+                <i class="fas fa-magic"></i> Demo Hackathon Login
+            </button>
+            
+            <p onclick="toggleAuthMode()" id="toggle-text" class="btn-link" style="display: block; text-align: center; margin-top: 1.5rem; font-size: 0.95rem;">
+                Already have an account? <strong>Login</strong>
+            </p>
+            <p style="text-align: center; margin-top: 1.5rem; font-size: 0.85rem;">
+                <a href="index.html" class="btn-link"><i class="fas fa-arrow-left" style="margin-right: 0.5rem;"></i>Back to Home</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/offline-sync.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>
+
+

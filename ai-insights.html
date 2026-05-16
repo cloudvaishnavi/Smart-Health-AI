@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Health Insights | Smart Health AI</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/ai.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .risk-meter-wrapper { text-align: center; margin-bottom: 1.5rem; }
+        .gauge-container { width: 100%; max-width: 400px; height: 20px; background: var(--gray-light); border-radius: 20px; margin: 0 auto 1rem; overflow: hidden; position: relative; }
+        .gauge-bar { height: 100%; border-radius: 20px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s; width: 0%; background: var(--success); }
+        .risk-labels { display: flex; justify-content: space-between; max-width: 400px; margin: 0 auto; font-size: 0.8rem; color: var(--gray); font-weight: 500; text-transform: uppercase; }
+        #risk-prediction-text { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        #risk-explanation { font-size: 0.95rem; color: var(--gray); line-height: 1.5; max-width: 500px; margin: 0 auto; }
+        
+        .interaction-card { background: var(--danger-light); border: 1px solid #FCA5A5; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+        .interaction-card strong { color: var(--danger); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .interaction-card p { color: var(--dark); font-size: 0.95rem; font-weight: 500; }
+        
+        .ai-summary-box { background: var(--light); border: 1px solid var(--gray-light); border-radius: 12px; padding: 1.5rem; min-height: 120px; }
+    </style>
+<link rel="manifest" href="manifest.json"></head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo"><a href="dashboard.html" style="text-decoration:none;color:inherit"><i class="fas fa-heartbeat"></i> SmartHealth <span>AI</span></a></div>
+            <div class="nav-actions">
+                <a href="dashboard.html" class="btn-outline" style="padding: 0.5rem 1rem;">Back to Dashboard</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="page-header">
+            <div>
+                <h1><i class="fas fa-brain text-primary"></i> AI Health Intelligence</h1>
+                <p>Personalized insights based on your medical history and vitals.</p>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Left: ML Risk & Interactions -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <!-- Feature 2: ML Risk Meter -->
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-chart-line"></i> Cardiovascular Risk Score</h2>
+                    <div class="risk-meter-wrapper">
+                        <div id="risk-prediction-text">Analyzing...</div>
+                        <div class="gauge-container">
+                            <div id="risk-score-bar" class="gauge-bar"></div>
+                        </div>
+                        <div class="risk-labels">
+                            <span>Low</span>
+                            <span>Medium</span>
+                            <span>High</span>
+                        </div>
+                        <div id="risk-explanation" class="mt-2">
+                            <div class="skeleton skeleton-text"></div>
+                            <div class="skeleton skeleton-text short"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 2: Drug Interactions -->
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-pills"></i> Drug Interaction Warnings</h2>
+                    <div id="interaction-warnings">
+                        <!-- Populated by JS if interactions exist -->
+                    </div>
+                    <p id="no-interactions-msg" style="color: var(--success); font-weight: 500; display: none;">
+                        <i class="fas fa-check-circle"></i> No known severe interactions in your current prescriptions.
+                    </p>
+                    <p style="font-size: 0.8rem; color: var(--gray); margin-top: 1rem; border-top: 1px solid var(--gray-light); padding-top: 0.5rem;">
+                        Automatically cross-checks your medical records. Does not replace professional medical advice.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right: AI Summary Generator -->
+            <div>
+                <div class="card" style="height: 100%;">
+                    <h2 class="card-title"><i class="fas fa-file-medical-alt"></i> Clinical Note Translator</h2>
+                    <p class="mb-2" style="font-size: 0.9rem;">Paste complex doctor's notes or test results below to get a simple, plain-English explanation.</p>
+                    
+                    <textarea id="medical-text-input" class="form-control" rows="4" placeholder="e.g., Patient presents with acute pharyngitis and mild tachycardia..."></textarea>
+                    
+                    <button class="btn-primary mt-2 mb-3" style="width: 100%;" onclick="triggerAISummary()">
+                        <i class="fas fa-magic"></i> Simplify Text
+                    </button>
+
+                    <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">AI Explanation:</h3>
+                    <div class="ai-summary-box">
+                        <div id="ai-loader" class="hidden" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <div class="skeleton skeleton-text"></div>
+                            <div class="skeleton skeleton-text"></div>
+                            <div class="skeleton skeleton-text short"></div>
+                        </div>
+                        <div id="summary-content">
+                            <span class="placeholder-text">Your simplified explanation will appear here.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Mic Button -->
+    <button id="voice-trigger" class="btn-mic-floating" title="Tap to speak">
+        <i class="fas fa-microphone"></i>
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/offline-sync.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/ai-handler.js"></script>
+    <script src="js/ml-predict.js"></script>
+    <script src="js/voice-engine.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkAuth();
+            
+            // Check interactions logic handler
+            const observer = new MutationObserver(() => {
+                const container = document.getElementById('interaction-warnings');
+                const msg = document.getElementById('no-interactions-msg');
+                if (container.children.length === 0) {
+                    msg.style.display = 'block';
+                } else {
+                    msg.style.display = 'none';
+                }
+            });
+            observer.observe(document.getElementById('interaction-warnings'), { childList: true });
+        });
+
+        function triggerAISummary() {
+            const text = document.getElementById('medical-text-input').value;
+            if(!text) {
+                if(window.showToast) window.showToast("Please enter some medical text first.", "error");
+                return;
+            }
+            document.getElementById('summary-content').innerHTML = '';
+            generateHealthSummary(text);
+        }
+    </script>
+</body>
+</html>
+
+

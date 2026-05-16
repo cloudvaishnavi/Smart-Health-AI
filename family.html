@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family & Emergency Info | Smart Health AI</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .form-section { background: var(--white); border: 1px solid var(--gray-light); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .form-section h3 { font-size: 1.15rem; color: var(--primary); margin-bottom: 1rem; border-bottom: 2px solid var(--light); padding-bottom: 0.5rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
+        .save-btn-container { position: sticky; bottom: 0; background: var(--white); padding: 1rem; border-top: 1px solid var(--gray-light); text-align: center; z-index: 100; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); margin: 0 -5%; width: 110%; }
+    </style>
+<link rel="manifest" href="manifest.json"></head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo"><a href="dashboard.html" style="text-decoration:none;color:inherit"><i class="fas fa-heartbeat"></i> SmartHealth <span>AI</span></a></div>
+            <div class="nav-actions">
+                <a href="dashboard.html" class="btn-outline" style="padding: 0.5rem 1rem;">Back to Dashboard</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container" style="padding-bottom: 6rem;">
+        <div class="page-header">
+            <div>
+                <h1><i class="fas fa-shield-alt text-primary"></i> Family & Emergency Info</h1>
+                <p>Ensure your emergency profile is up to date. This data powers your SOS QR Code.</p>
+            </div>
+        </div>
+
+        <form id="emergency-form">
+            <!-- Section 1: Emergency Medical Details -->
+            <div class="form-section">
+                <h3><i class="fas fa-notes-medical"></i> Medical Profile</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Blood Group</label>
+                        <select id="bg-input" class="form-control">
+                            <option value="">Select...</option>
+                            <option value="A+">A+</option><option value="A-">A-</option>
+                            <option value="B+">B+</option><option value="B-">B-</option>
+                            <option value="O+">O+</option><option value="O-">O-</option>
+                            <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Organ Donor Status</label>
+                        <select id="donor-input" class="form-control">
+                            <option value="Not Registered">Not Registered</option>
+                            <option value="Registered Donor">Registered Donor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Known Allergies (comma separated)</label>
+                        <input type="text" id="allergies-input" class="form-control" placeholder="e.g., Peanuts, Penicillin">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Critical / Chronic Conditions</label>
+                        <input type="text" id="conditions-input" class="form-control" placeholder="e.g., Asthma, Type 2 Diabetes">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label class="form-label">Current Medications</label>
+                        <input type="text" id="meds-input" class="form-control" placeholder="e.g., Metformin 500mg daily">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Family Details -->
+            <div class="form-section">
+                <h3><i class="fas fa-users"></i> Family Details</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Father's Name</label>
+                        <input type="text" id="father-input" class="form-control" placeholder="Enter name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mother's Name</label>
+                        <input type="text" id="mother-input" class="form-control" placeholder="Enter name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Guardian / Spouse Name</label>
+                        <input type="text" id="guardian-input" class="form-control" placeholder="Enter name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Siblings</label>
+                        <input type="text" id="siblings-input" class="form-control" placeholder="Enter names">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label class="form-label">Family Medical History</label>
+                        <textarea id="family-history-input" class="form-control" rows="2" placeholder="e.g., Mother had hypertension"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Emergency Contacts & Logistics -->
+            <div class="form-section">
+                <h3><i class="fas fa-phone-alt"></i> Contacts & Logistics</h3>
+                <div class="form-grid">
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label class="form-label">Emergency Contacts (Name & Phone)</label>
+                        <input type="text" id="contacts-input" class="form-control" placeholder="e.g., John Doe: +1-234-567-890">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Health Insurance Details</label>
+                        <input type="text" id="insurance-input" class="form-control" placeholder="Provider & Policy No.">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nearby Hospital Preference</label>
+                        <input type="text" id="hospital-input" class="form-control" placeholder="e.g., City General Hospital">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label class="form-label">Additional Emergency Notes</label>
+                        <textarea id="notes-input" class="form-control" rows="2" placeholder="Any specific instructions for paramedics..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="save-btn-container">
+                <button type="submit" id="save-btn" class="btn-primary" style="padding: 1rem 3rem; font-size: 1.1rem; width: 100%; max-width: 400px;">
+                    <i class="fas fa-save"></i> Save Profile
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/offline-sync.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            currentUser = await checkAuth();
+            if (currentUser) {
+                loadProfileData();
+            }
+        });
+
+        async function loadProfileData() {
+            let profile = {};
+            if (window.offlineSync) {
+                profile = window.offlineSync.getProfile(currentUser.id) || {};
+            }
+
+            // Attempt to fetch fresh from DB
+            const { data, error } = await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single();
+            if (data && !error) {
+                profile = { ...profile, ...data };
+                if (window.offlineSync) window.offlineSync.saveProfile(currentUser.id, profile);
+            }
+
+            // Populate Form
+            document.getElementById('bg-input').value = profile.blood_group || '';
+            document.getElementById('donor-input').value = profile.organ_donor_status || 'Not Registered';
+            document.getElementById('allergies-input').value = profile.allergies || '';
+            document.getElementById('conditions-input').value = profile.critical_conditions || '';
+            document.getElementById('meds-input').value = profile.current_medications || '';
+            
+            document.getElementById('father-input').value = profile.father_name || '';
+            document.getElementById('mother-input').value = profile.mother_name || '';
+            document.getElementById('guardian-input').value = profile.guardian_name || '';
+            document.getElementById('siblings-input').value = profile.siblings || '';
+            document.getElementById('family-history-input').value = profile.family_medical_history || '';
+            
+            document.getElementById('contacts-input').value = profile.emergency_contacts || '';
+            document.getElementById('insurance-input').value = profile.insurance_details || '';
+            document.getElementById('hospital-input').value = profile.hospital_preference || '';
+            document.getElementById('notes-input').value = profile.emergency_notes || '';
+        }
+
+        document.getElementById('emergency-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('save-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            const payload = {
+                blood_group: document.getElementById('bg-input').value,
+                organ_donor_status: document.getElementById('donor-input').value,
+                allergies: document.getElementById('allergies-input').value,
+                critical_conditions: document.getElementById('conditions-input').value,
+                current_medications: document.getElementById('meds-input').value,
+                
+                father_name: document.getElementById('father-input').value,
+                mother_name: document.getElementById('mother-input').value,
+                guardian_name: document.getElementById('guardian-input').value,
+                siblings: document.getElementById('siblings-input').value,
+                family_medical_history: document.getElementById('family-history-input').value,
+                
+                emergency_contacts: document.getElementById('contacts-input').value,
+                insurance_details: document.getElementById('insurance-input').value,
+                hospital_preference: document.getElementById('hospital-input').value,
+                emergency_notes: document.getElementById('notes-input').value,
+            };
+
+            const { error } = await supabaseClient.from('profiles').update(payload).eq('id', currentUser.id);
+
+            // Save to offline sync regardless
+            if (window.offlineSync) {
+                let existing = window.offlineSync.getProfile(currentUser.id) || {};
+                window.offlineSync.saveProfile(currentUser.id, { ...existing, ...payload });
+            }
+
+            if (error) {
+                console.warn('DB Update Error (columns might be missing):', error);
+                if (window.showToast) window.showToast('Saved locally. Backend will sync later.', 'warning');
+            } else {
+                if (window.showToast) window.showToast('Profile saved securely!', 'success');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save"></i> Save Profile';
+        });
+    </script>
+</body>
+</html>
+
+
